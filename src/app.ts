@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
-import session from "express-session";
 import swaggerUi from "swagger-ui-express";
 import pinoHttp from "pino-http";
 
@@ -25,16 +24,7 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(bodyParser.json());
-app.use(
-  session({
-    secret: "123",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-      maxAge: 1000 * 60 * 30,
-    },
-  })
-);
+
 
 // Definición de rutas
 
