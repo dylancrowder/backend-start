@@ -11,9 +11,7 @@ import pinoHttp from "pino-http";
 
 // Importación de rutas y utilidades
 import articleRoutes from "./routes/article.routes";
-import authRoute from "./routes/auth.routes";
 import { errorHandler } from "./middlewares/error.middleware";
-import erro from "./routes/err.router";
 import { swaggerDocs } from "./documentation/swagger.config";
 
 // Cargar variables de entorno
@@ -39,10 +37,13 @@ app.use(
 );
 
 // Definición de rutas
+
+app.get("/", (req, res) => {
+  res.send("Hello, Vercel!");
+});
+
 app.use("/api/v1", articleRoutes);
-app.use("/auth", authRoute);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-app.use("/error", erro);
 // Middleware de manejo de errores
 app.use(errorHandler);
 
