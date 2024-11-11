@@ -3,29 +3,28 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-let dbConnect: mysql.Connection | null = null;
+let pool: mysql.Pool | null = null;
 
-async function connectToDatabase(): Promise<mysql.Connection> {
-  if (!dbConnect) {
+async function connectToDatabase(): Promise<mysql.Pool> {
+  if (!pool) {
     try {
-      dbConnect = await mysql.createConnection({
+      pool = mysql.createPool({
         host: process.env.DB_HOST_NAME,
-        user: process.env.DB_USER_NAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
+        user: process.env.MYSQL_DATABASE,
+        password: process.env.MYSQL_ROOT_PASSWORD,
         port: parseInt(process.env.DB_PORT || "3306"),
-        ssl: {
-          rejectUnauthorized: true,
-          ca: process.env.CA_CERTIFICATE,
-        },
       });
-      console.log("Conexión a la base de datos establecida correctamente.");
+      console.log(
+        "Conexión al pool de base de datos establecida correctamente."
+      );
     } catch (error: any) {
-      dbConnect = null;
-      throw new Error(`Error al conectar la base de datos ${error.message}`);
+      pool = null;
+      throw new Error(
+        `Error al conectar con el pool de base de datos: ${error.message}`
+      );
     }
   }
-  return dbConnect;
+  return pool;
 }
 
 export { connectToDatabase };

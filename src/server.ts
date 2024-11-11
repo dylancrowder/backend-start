@@ -4,8 +4,6 @@ import pino from "pino";
 
 // tu objeto logger centralizado
 
-// código personalizado usando el logger
-
 dotenv.config();
 const logger = pino();
 const PORT = process.env.PORT || 8080;
@@ -17,7 +15,7 @@ const server = app.listen(PORT, () => {
 
 // Manejo de excepciones no controladas
 process.on("uncaughtException", (err) => {
-  logger.fatal("Excepcion no controlada:", err);
+  logger.fatal(`exepcion no controlada: ${err}`);
   process.exit(1);
 });
 
