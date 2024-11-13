@@ -11,6 +11,7 @@ app.listen(PORT, () => {
 });
 
 process.on("uncaughtException", (err) => {
+
   logger.error({ err }, "Excepción no controlada");
   process.exit(1);
 });
