@@ -1,5 +1,5 @@
 import { connectToDatabase } from "../db/db_connect";
-import { Article } from "../interfaces/article.interface";
+
 
 export class ArticleModel {
   // Filtrar  por nombre

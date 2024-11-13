@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import Joi from "joi";
+import AppError from "../utilities/error/appError";
 import { ArticleModel } from "../models/model.article";
 import {
   articleSchema,
   articleSchemaCreate,
   querySchema,
 } from "../utilities/joi";
-import { HttpError } from "../utilities/error/httpError";
 
 export class ArticleController {
   // Buscar
@@ -17,9 +17,10 @@ export class ArticleController {
     const { error } = querySchema.validate(req.query);
     if (error) {
       return next(
-        new HttpError(
-          `Parámetros faltantes o inválidos en la consulta: ${error.message}`,
-          400
+        new AppError(
+          "ValidationError",
+          400,
+          `Parámetros faltantes o inválidos en la consulta: ${error.message}`
         )
       );
     }
@@ -27,9 +28,10 @@ export class ArticleController {
     // Verificar que el nombre esté presente y sea de tipo string
     if (!nombre || typeof nombre !== "string") {
       return next(
-        new HttpError(
-          "El parámetro 'nombre' es obligatorio y debe ser una cadena de texto.",
-          400
+        new AppError(
+          "InvalidParameterError",
+          400,
+          "El parámetro 'nombre' es obligatorio y debe ser una cadena de texto."
         )
       );
     }
@@ -41,9 +43,10 @@ export class ArticleController {
       // Verificar si no se encontraron artículos
       if (articles.length === 0) {
         return next(
-          new HttpError(
-            "No se encontraron productos con los criterios de búsqueda especificados.",
-            404
+          new AppError(
+            "NotFoundError",
+            404,
+            "No se encontraron productos con los criterios de búsqueda especificados."
           )
         );
       }
@@ -55,9 +58,10 @@ export class ArticleController {
 
       if (validationResult.error) {
         return next(
-          new HttpError(
-            `Error al validar productos: ${validationResult.error.message}`,
-            400
+          new AppError(
+            "ValidationError",
+            400,
+            `Error al validar productos: ${validationResult.error.message}`
           )
         );
       }
@@ -66,10 +70,15 @@ export class ArticleController {
       res.status(200).json({ articles });
     } catch (error: any) {
       return next(
-        new HttpError(`Error al realizar la búsqueda: ${error.message}`, 500)
+        new AppError(
+          "InternalServerError",
+          500,
+          `Error al realizar la búsqueda: ${error.message}`
+        )
       );
     }
   }
+
   // Crear
   static async create(req: Request, res: Response, next: NextFunction) {
     const { nombre, marca } = req.body;
@@ -78,7 +87,11 @@ export class ArticleController {
     const { error } = articleSchemaCreate.validate(req.body);
     if (error) {
       return next(
-        new HttpError(`Todos los parámetros son requeridos`, 400, error)
+        new AppError(
+          "ValidationError",
+          400,
+          `Todos los parámetros son requeridos: ${error.message}`
+        )
       );
     }
 
@@ -96,8 +109,13 @@ export class ArticleController {
         newArticle: newArticle,
       });
     } catch (error: any) {
-      console.error(error);
-      next(new HttpError(`Error al crear el artículo`, 500, error));
+      return next(
+        new AppError(
+          "InternalServerError",
+          500,
+          `Error al crear el artículo: ${error.message}`
+        )
+      );
     }
   }
 }

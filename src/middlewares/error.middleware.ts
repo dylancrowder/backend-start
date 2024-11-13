@@ -1,16 +1,46 @@
+import AppError from "../utilities/error/appError";
+import logger from "../utilities/pino.logger";
 import { Request, Response, NextFunction } from "express";
-import { HttpError } from "../utilities/error/httpError";
 
-export const errorHandler: any = (
+function errorHandler(
   err: Error,
   req: Request,
   res: Response,
   next: NextFunction
-): Response | void => {
-  if (err instanceof HttpError && err.isOperational) {
-    console.log("Error controlado:", err.generalError);
-    return res.status(err.statusCode).json({ message: err.message });
+): void {
+  if (err instanceof AppError) {
+    // Si el error es operacional, responde con el código HTTP y el mensaje.
+    if (err.isOperational) {
+      res.status(err.httpCode).json({
+        status: "error",
+        name: err.name,
+        message: err.message,
+      });
+    } else {
+      // Si el error no es operacional, lo logueamos como un error más grave.
+      logger.error({
+        message: "Error no manejado (no operacional):",
+        error: err,
+      });
+
+      // Devuelve un mensaje genérico para errores no operacionales
+      res.status(500).json({
+        status: "error",
+        message: "Error interno del servidor. Por favor, contacte al soporte.",
+      });
+    }
+  } else {
+    // Si el error no es una instancia de AppError, lo tratamos como un error inesperado.
+    logger.error({
+      message: "Error no manejado:",
+      error: err,
+    });
+
+    res.status(500).json({
+      status: "error",
+      message: "Error interno del servidor.",
+    });
   }
-  req.log.fatal("Error desconocido:", err);
-  res.status(500).json({ message: "Ocurrió algo inesperado" });
-};
+}
+
+export default errorHandler;

@@ -1,2 +1,6 @@
-node_modelues
+node_modules
+dist
 .env
+.npmrc
+vercel.json
+.vercel

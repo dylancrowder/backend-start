@@ -5,13 +5,12 @@ import helmet from "helmet";
 import cors from "cors";
 import compression from "compression";
 import swaggerUi from "swagger-ui-express";
-import pinoHttp from "pino-http";
 
 // Importación de rutas y utilidades
 import articleRoutes from "./routes/article.routes";
-import { errorHandler } from "./middlewares/error.middleware";
 import { swaggerDocs } from "./documentation/swagger.config";
 import { connectToDatabase } from "./db/db_connect";
+import errorHandler from "./middlewares/error.middleware";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -19,7 +18,6 @@ dotenv.config();
 const app = express();
 
 // Configuración de middlewares
-app.use(pinoHttp());
 app.use(helmet());
 app.use(cors());
 app.use(compression());
@@ -29,22 +27,13 @@ app.use(bodyParser.json());
 
 app.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const dbPool = await connectToDatabase(); // Obtener el pool de conexiones
-
-    // Ejecutar la consulta SQL y desestructurar correctamente el resultado
+    const dbPool = await connectToDatabase();
     const [rows]: [any[], any] = await dbPool.query("SELECT NOW()");
-
-    // Ahora rows es un arreglo, así que puedes acceder a su primer elemento
     const hora = rows[0]["NOW()"];
-
-    // Enviar la respuesta en formato JSON
     res.json({
-   
       hora: hora,
-  
     });
   } catch (error: any) {
-    // Manejo de errores - Enviar respuesta con código 500
     return next(
       new Error(
         `Error al obtener la hora desde la base de datos: ${error.message}`
