@@ -49,7 +49,7 @@ function errorHandler(
 
     res.status(500).json({
       status: "error",
-      message: "Error interno del servidor.",
+      message: "Error interno del servidor-.",
     });
   }
 }
