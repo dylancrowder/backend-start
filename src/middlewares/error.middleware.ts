@@ -9,35 +9,42 @@ function errorHandler(
   next: NextFunction
 ): void {
   if (err instanceof AppError) {
-    // Si el error es operacional, responde con el código HTTP y el mensaje.
     if (err.isOperational) {
+      logger.warn({
+        message: "Error operacional manejado:",
+        name: err.name,
+        httpCode: err.httpCode,
+        description: err.message,
+        stack: err.stack,
+      });
+
       res.status(err.httpCode).json({
         status: "error",
         name: err.name,
         message: err.message,
+
+        suggestion:
+          "Revise la entrada o contacte a soporte si el problema persiste.",
       });
     } else {
-      // Si el error no es operacional, lo logueamos como un error más grave.
       logger.error({
-        message: "Error no manejado (no operacional):",
-        error: err,
+        message: "Error no operacional detectado:",
+        name: err.name,
+        stack: err.stack,
+        description: err.message,
       });
 
-      // Devuelve un mensaje genérico para errores no operacionales
       res.status(500).json({
         status: "error",
         message: "Error interno del servidor. Por favor, contacte al soporte.",
       });
     }
   } else {
-    // Si el error no es una instancia de AppError, lo tratamos como un error inesperado.
     logger.error({
-      message: "Error no manejado:",
-      error: err.name,
-      error_message: err.message,
-      e: err.name,
-      errores: process.env.MYSQL_PORT,
-      db: process.env.MYSQL_PASSWORD,
+      message: "Error inesperado no manejado:",
+      name: err.name,
+      description: err.message,
+      stack: err.stack,
     });
 
     res.status(500).json({
