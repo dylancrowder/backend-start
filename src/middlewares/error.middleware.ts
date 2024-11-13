@@ -33,7 +33,9 @@ function errorHandler(
     // Si el error no es una instancia de AppError, lo tratamos como un error inesperado.
     logger.error({
       message: "Error no manejado:",
-      error: err,
+      error: err.name,
+      error_message:err.message,
+
       errores: process.env.MYSQL_PORT,  
       db: process.env.MYSQL_PASSWORD
     });
