@@ -44,6 +44,7 @@ app.get("/", async (req: Request, res: Response, next: NextFunction) => {
 
 app.use("/api/v1", articleRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
 // Middleware de manejo de errores
 app.use(errorHandler);
 
