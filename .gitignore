@@ -4,4 +4,3 @@ dist/
 .npmrc 
 vercel.json
 .vercel
-docker-compose.yml
