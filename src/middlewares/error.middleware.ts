@@ -34,10 +34,10 @@ function errorHandler(
     logger.error({
       message: "Error no manejado:",
       error: err.name,
-      error_message:err.message,
-
-      errores: process.env.MYSQL_PORT,  
-      db: process.env.MYSQL_PASSWORD
+      error_message: err.message,
+      e: err.name,
+      errores: process.env.MYSQL_PORT,
+      db: process.env.MYSQL_PASSWORD,
     });
 
     res.status(500).json({
